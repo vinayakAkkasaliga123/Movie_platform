@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import Search from './components/Search'
 import MovieCard from './components/MovieCard';
+import { useDebounce } from 'react-use';
 
 const API_BASE_URL = 'https://api.themoviedb.org/3'
 
@@ -22,10 +23,15 @@ function App() {
   const [errormessage, seterrormessage] = useState('');
   const [MovieList, setMovieList] = useState([]);
   const [isLoading, setisLoading] = useState(false);
+  const [DebounceSearch,setdebounceSearch] = useState('');
 
-  const fetchMovies = async ()=>{
+  useDebounce(()=>setdebounceSearch(searchTerm),500,[searchTerm])
+
+  const fetchMovies = async (query='')=>{
     try{
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`
+      const endpoint =query ? 
+      `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}` : 
+      `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`
       const response = await fetch(endpoint,API_OPTIONS);
       if(!response.ok){
         throw new Error("Data fetching failed");
@@ -47,8 +53,8 @@ function App() {
     
   }
   useEffect(()=>{
-    fetchMovies();
-  },[])
+    fetchMovies(DebounceSearch);
+  },[DebounceSearch])
   return (
     <main>
     <div className='pattern'>
