@@ -1,0 +1,1 @@
+echo '{ "installCommand": "npm install --legacy-peer-deps" }' > vercel.json
